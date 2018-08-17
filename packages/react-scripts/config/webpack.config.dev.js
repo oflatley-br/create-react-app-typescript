@@ -188,37 +188,42 @@ module.exports = {
           // "style" loader turns CSS into JS modules that inject <style> tags.
           // In production, we use a plugin to extract that CSS to a file, but
           // in development "style" loader enables hot editing of CSS.
+
+            // OPF -- support for module css.  use a loader which generates .d.ts files for all css files imported from tsx
+            // I have not made the needed changes (if any) to webpack.config.prod.js
           {
-            test: /\.css$/,
-            use: [
-              require.resolve('style-loader'),
-              {
-                loader: require.resolve('css-loader'),
-                options: {
-                  importLoaders: 1,
-                },
-              },
-              {
-                loader: require.resolve('postcss-loader'),
-                options: {
-                  // Necessary for external CSS imports to work
-                  // https://github.com/facebookincubator/create-react-app/issues/2677
-                  ident: 'postcss',
-                  plugins: () => [
-                    require('postcss-flexbugs-fixes'),
-                    autoprefixer({
-                      browsers: [
-                        '>1%',
-                        'last 4 versions',
-                        'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
-                      ],
-                      flexbox: 'no-2009',
-                    }),
-                  ],
-                },
-              },
-            ],
+              test: /\.css$/,
+              // OPF -- not sure about this, it was in the online snip, but note in the git version (TODO):  include: path.join(__dirname, 'src/components'),
+              use: [
+                  require.resolve('style-loader'),
+                  {
+                      loader: require.resolve('typings-for-css-modules-loader'),
+                      options: {
+                          modules: true,
+                          namedExport: true
+                      }
+                  },
+                  {
+                      loader: require.resolve('postcss-loader'),
+                      options: {
+                          // Necessary for external CSS imports to work
+                          // https://github.com/facebookincubator/create-react-app/issues/2677
+                          ident: 'postcss',
+                          plugins: () => [
+                              require('postcss-flexbugs-fixes'),
+                              autoprefixer({
+                                  browsers: [
+                                      '>1%',
+                                      'last 4 versions',
+                                      'Firefox ESR',
+                                      'not ie < 9', // React doesn't support IE8 anyway
+                                  ],
+                                  flexbox: 'no-2009',
+                              }),
+                          ],
+                      },
+                  },
+              ]
           },
           // "file" loader makes sure those assets get served by WebpackDevServer.
           // When you `import` an asset, you get its (virtual) filename.
